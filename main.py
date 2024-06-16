@@ -1,6 +1,6 @@
 #IMPORTANT!
 #MAKE SURE SCREEN MAPPING is set to "PART" an NOT "ALL",
-#  otherwise ScreenMapping with be reset at reboot to screen resolution
+#  otherwise ScreenMapping will be reset after restarting TabletDriverCenter/Setting
 
 from Scrn_map import definition
 import os
