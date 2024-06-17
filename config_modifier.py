@@ -5,7 +5,7 @@
 from Scrn_map import definition
 import os
 import xml.etree.ElementTree as ET
-from subprocess import run
+from subprocess import run, CalledProcessError, TimeoutExpired
 import signal
 import psutil
 import sys
@@ -16,7 +16,6 @@ import time
 def main():
     c = coordinates()
     user = os.getlogin()
-
     pid1,pid2 = pid_finder()
     reboot(user,c,pid1,pid2)
     
@@ -45,7 +44,9 @@ def pid_finder():
             pid1 = proc.pid
         elif process_name2 in proc.name():
             pid2 = proc.pid
-    print(pid1,pid2)
+    if (pid1, pid2) == (0 ,0):
+        run_tab_center()
+        run_tab_setting()
     return pid1,pid2
     
 
@@ -70,29 +71,51 @@ def config_modifier(user, c):
     bottom.text = str(c[3])
 
     config.write(f"C:/Users/{user}/AppData/Local/VKTablet/config_user.xml")
-    
-    #Next we should make sure the TabletDriverCenter.exe is rebooted to read the new XML config file.
-    
+        
+#Next we should make sure the TabletDriverCenter.exe is rebooted to read the new XML config file.
+
+def run_tab_center():
+    try:
+        run("C:/Program Files/VKTablet/TabletDriverCenter.exe", timeout=1)
+    except TimeoutExpired:
+        print(f"TabletDriverCenter.exe launched")
+
+def run_tab_setting():
+    try:
+        run("C:/Program Files/VKTablet/TabletDriverSetting.exe", timeout=1)
+    except TimeoutExpired:
+        print(f"TabletDriverSetting.exe launched.")
+
 def reboot(user,c,pid1,pid2):
     time.sleep(0.5)
+    
     try:
         os.kill(pid1, signal.SIGILL)
     except OSError:
-        run("C:/Program Files/VKTablet/TabletDriverCenter.exe")
-        sys.exit(1)
+        pid_finder()
+        reboot(user,c,pid1,pid2)
+
     time.sleep(0.5)
     try:
         os.kill(pid2, signal.SIGILL)
     except OSError:
-        run("C:/Program Files/VKTablet/TabletDriverSetting.exe")
-        sys.exit(1)
+        pid_finder()
+        reboot(user,c,pid1,pid2)
     #########
     config_modifier(user, c)
     #########
-    time.sleep(0.5)
-    run("C:/Program Files/VKTablet/TabletDriverCenter.exe")
-    time.sleep(0.5)
-    run("C:/Program Files/VKTablet/TabletDriverSetting.exe")
+    run_tab_center()
+    run_tab_setting()
+
+    #Success/Failure check
+
+    _pid1,_pid2 = pid_finder()
+    if (_pid1,_pid2) == (pid1,pid2):
+        print(pid1,pid2,_pid1,_pid2)
+        print('Failed to reboot.')
+    elif (_pid1,_pid2) != (pid1,pid2):
+        print(pid1,pid2,_pid1,_pid2)
+        print('Reboot success.')
     # input('Press CTRL+D')
 
 
