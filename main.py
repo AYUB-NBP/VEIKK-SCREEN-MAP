@@ -5,10 +5,9 @@
 from Scrn_map import definition
 import os
 import xml.etree.ElementTree as ET
-from subprocess import run, CalledProcessError, TimeoutExpired
+import subprocess
 import signal
 import psutil
-import sys
 import time
 
 #Change f to change scale factor.
@@ -16,11 +15,11 @@ import time
 def main():
     c = coordinates()
     user = os.getlogin()
-    pid1,pid2 = pid_finder()
+    pid1 = 0  
+    pid2 = 0
+    pid1,pid2 = pid_finder(pid1, pid2)
     reboot(user,c,pid1,pid2)
     
-      
-
 def coordinates():
     w,h=definition() 
     w,h = int(w),int(h)
@@ -34,22 +33,28 @@ def coordinates():
     coordinates = [left,top,right,bottom] #Order matching XML file for ease of use.
     return coordinates
 
-def pid_finder():
-    pid1 = 0
-    pid2 = 0
+def pid_finder(pid1,pid2):
     process_name1 = "TabletDriverCenter"
     process_name2 = "TabletDriverSetting"
+
     for proc in psutil.process_iter():
         if process_name1 in proc.name():
             pid1 = proc.pid
         elif process_name2 in proc.name():
             pid2 = proc.pid
-    if (pid1, pid2) == (0 ,0):
+
+    if pid1 == 0:
         run_tab_center()
+        pid_finder(pid1,pid2)
+    elif pid2 == 0:
         run_tab_setting()
+        pid_finder(pid1,pid2)
+    if pid1 != 0:
+        print(f"TabletDriverCenter.exe launched")
+    if pid2 != 0:
+        print(f"TabletDriverSetting.exe launched")
     return pid1,pid2
     
-
 def config_modifier(user, c):
     config = ET.parse(f"C:/Users/{user}/AppData/Local/VKTablet/config_user.xml")
     root = config.getroot()
@@ -75,31 +80,28 @@ def config_modifier(user, c):
 #Next we should make sure the TabletDriverCenter.exe is rebooted to read the new XML config file.
 
 def run_tab_center():
-    try:
-        run("C:/Program Files/VKTablet/TabletDriverCenter.exe", timeout=1)
-    except TimeoutExpired:
-        print(f"TabletDriverCenter.exe launched")
+    process = subprocess.Popen([r'C:\Program Files\VKTablet\TabletDriverCenter.exe'])
+    return process
 
 def run_tab_setting():
-    try:
-        run("C:/Program Files/VKTablet/TabletDriverSetting.exe", timeout=1)
-    except TimeoutExpired:
-        print(f"TabletDriverSetting.exe launched.")
-
+    process = subprocess.Popen([r'C:\Program Files\VKTablet\TabletDriverSetting.exe'])
+    return process
+    
 def reboot(user,c,pid1,pid2):
     time.sleep(0.5)
     
     try:
         os.kill(pid1, signal.SIGILL)
     except OSError:
-        pid_finder()
+        pid_finder(pid1,pid2)
         reboot(user,c,pid1,pid2)
 
     time.sleep(0.5)
+
     try:
         os.kill(pid2, signal.SIGILL)
     except OSError:
-        pid_finder()
+        pid_finder(pid1,pid2)
         reboot(user,c,pid1,pid2)
     #########
     config_modifier(user, c)
@@ -109,7 +111,7 @@ def reboot(user,c,pid1,pid2):
 
     #Success/Failure check
 
-    _pid1,_pid2 = pid_finder()
+    _pid1,_pid2 = pid_finder(pid1,pid2)
     if (_pid1,_pid2) == (pid1,pid2):
         print(pid1,pid2,_pid1,_pid2)
         print('Failed to reboot.')
@@ -117,7 +119,6 @@ def reboot(user,c,pid1,pid2):
         print(pid1,pid2,_pid1,_pid2)
         print('Reboot success.')
     # input('Press CTRL+D')
-
 
 if __name__ == "__main__":
     main()
