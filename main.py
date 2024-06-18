@@ -2,15 +2,16 @@
 #MAKE SURE SCREEN MAPPING is set to "PART" an NOT "ALL",
 #  otherwise ScreenMapping will be reset after restarting TabletDriverCenter/Setting
 
-from Scrn_map import definition
+from scrn_map import definition
 import os
 import xml.etree.ElementTree as ET
 import subprocess
 import signal
 import psutil
 import time
+import sys
 
-#Change f to change scale factor.
+#Change f to change scale factor.---> f now is an argument taken at launch.
 
 def main():
     c = coordinates()
@@ -23,42 +24,51 @@ def main():
 def coordinates():
     w,h=definition() 
     w,h = int(w),int(h)
-    f=0.8
+    try:
+        f=float(sys.argv[1])
+    except ValueError:
+        print('Only a numeric argument should be given.')
+        sys.exit(1)
+    except IndexError:
+        print('Please provide a scaling factor.')
+        sys.exit(1)
+    
 ############################
     top = (f*h)/2
     left = (f*w)/2
     bottom = h-(f*h)/2
     right = w- (f*w)/2
 ############################
-    coordinates = [left,top,right,bottom] #Order matching XML file for ease of use.
+    coordinates = [left,top,right,bottom] #Order matching XML file for ease of use. (CRITICAL ORDER FOR CALCULATION)
     return coordinates
 
 def pid_finder(pid1,pid2):
-    process_name1 = "TabletDriverCenter"
-    process_name2 = "TabletDriverSetting"
 
     for proc in psutil.process_iter():
-        if process_name1 in proc.name():
+        if "TabletDriverCenter" in proc.name():
             pid1 = proc.pid
-        elif process_name2 in proc.name():
+        elif "TabletDriverSetting" in proc.name():
             pid2 = proc.pid
 
     if pid1 == 0:
-        run_tab_center()
+        print('TabletDriverCenter not running.')
+        run_tab_setting()
+        time.sleep(1)
         pid_finder(pid1,pid2)
     elif pid2 == 0:
+        print('TabletDriverSetting not running.')
         run_tab_setting()
         pid_finder(pid1,pid2)
     if pid1 != 0:
-        print(f"TabletDriverCenter.exe launched")
+        print(f"TabletDriverCenter.exe is running.")
     if pid2 != 0:
-        print(f"TabletDriverSetting.exe launched")
+        print(f"TabletDriverSetting.exe is running.")
     return pid1,pid2
     
 def config_modifier(user, c):
     config = ET.parse(f"C:/Users/{user}/AppData/Local/VKTablet/config_user.xml")
     root = config.getroot()
-    tablet_model = 'VK_2FEB_0003'
+    tablet_model = 'VK_2FEB_0003' #Name of child element that has my tablet's settings.
     #in my case, my tablet code name is VK_2FEB_0003, since only the values in that child element change when changing settings from VKtablet software.
     tablet_config = root.find(f'{tablet_model}') #XML element selection process
     screen_map = tablet_config.find('ScreenMap')
@@ -66,6 +76,7 @@ def config_modifier(user, c):
     right = screen_map.find('right')
     top = screen_map.find('top')
     bottom = screen_map.find('bottom')
+
     ########### Elements modification #############
     for x in c:
         c[c.index(x)] = int(x)
@@ -79,44 +90,47 @@ def config_modifier(user, c):
         
 #Next we should make sure the TabletDriverCenter.exe is rebooted to read the new XML config file.
 
-def run_tab_center():
-    process = subprocess.Popen([r'C:\Program Files\VKTablet\TabletDriverCenter.exe'])
-    return process
-
+# def run_tab_center():
+#     process = subprocess.Popen([r'C:\Program Files\VKTablet\TabletDriverCenter.exe'])
+#     return process
+####### The above function was unnecessary because TabletDriverSetting.Exe launches TabletDriverCenter.exe automatically with it.
 def run_tab_setting():
     process = subprocess.Popen([r'C:\Program Files\VKTablet\TabletDriverSetting.exe'])
     return process
     
 def reboot(user,c,pid1,pid2):
+
     time.sleep(0.5)
-    
+
+    print('Rebooting processes.')
+#Killing TabletDriverCenter.exe and TabletDriverSetting.exe
     try:
-        os.kill(pid1, signal.SIGILL)
+        os.kill(pid1, signal.SIGTERM)
     except OSError:
-        pid_finder(pid1,pid2)
-        reboot(user,c,pid1,pid2)
+        print("Error: Can't kill TabletDriverCenter.exe.")
+        main()
 
     time.sleep(0.5)
 
     try:
-        os.kill(pid2, signal.SIGILL)
+        os.kill(pid2, signal.SIGTERM)
     except OSError:
-        pid_finder(pid1,pid2)
-        reboot(user,c,pid1,pid2)
+        "Error: Can't kill TabletDriverSetting.exe."
+        main()
     #########
     config_modifier(user, c)
     #########
-    run_tab_center()
     run_tab_setting()
 
     #Success/Failure check
 
+    #Since everytime a non-system process gets assigned a different PID, checking if it changed would tell us if it rebooted.
     _pid1,_pid2 = pid_finder(pid1,pid2)
     if (_pid1,_pid2) == (pid1,pid2):
-        print(pid1,pid2,_pid1,_pid2)
+        print("Old PIDs:",pid1,pid2,"\nNew PIDs:",_pid1,_pid2)
         print('Failed to reboot.')
     elif (_pid1,_pid2) != (pid1,pid2):
-        print(pid1,pid2,_pid1,_pid2)
+        print("Old PIDs:",pid1,pid2,"\nNew PIDs:",_pid1,_pid2)
         print('Reboot success.')
     # input('Press CTRL+D')
 
