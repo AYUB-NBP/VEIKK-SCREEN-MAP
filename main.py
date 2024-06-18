@@ -1,6 +1,7 @@
 #IMPORTANT!
 #MAKE SURE SCREEN MAPPING is set to "PART" an NOT "ALL",
 #  otherwise ScreenMapping will be reset after restarting TabletDriverCenter/Setting
+#  This program assumes you're running Windows 11 like me, I haven't test on Linux or others operating systems.
 
 from scrn_map import definition
 import os
@@ -34,12 +35,14 @@ def coordinates():
         sys.exit(1)
     
 ############################
-    top = (f*h)/2
-    left = (f*w)/2
-    bottom = h-(f*h)/2
-    right = w- (f*w)/2
+    left = w-(w*f)-(w*((1-f)/2)) #x1
+    top =  h-(h*f)-(h*((1-f)/2))#y1
+    ###############
+    right = w - w*((1-f)/2)  #x2
+    bottom = h - h*((1-f)/2) #y2
 ############################
     coordinates = [left,top,right,bottom] #Order matching XML file for ease of use. (CRITICAL ORDER FOR CALCULATION)
+    # We're basically calculating the coordinates of two paints that make a rectangle left,top:x,y and right,bottom :x,y,this data format is just to inject in XML.
     return coordinates
 
 def pid_finder(pid1,pid2):

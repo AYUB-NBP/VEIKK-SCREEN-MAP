@@ -8,4 +8,4 @@ steps:
 
 - Read and write into xml config file in user AppData.
 
-- Optional GUI using TKINTER.
+- Optional: GUI using TKINTER.
