@@ -15,24 +15,34 @@ import sys
 #Change f to change scale factor.---> f now is an argument taken at launch.
 
 def main():
-    c = coordinates()
+    global gui_f
+    gui_f = 0
+    f = factor() or gui_f
+    core_func(f)
+    
+def core_func(f):
+    c = coordinates(f)
     user = os.getlogin()
     pid1 = 0  
     pid2 = 0
     pid1,pid2 = pid_finder(pid1, pid2)
     reboot(user,c,pid1,pid2)
-    
-def coordinates():
-    w,h=definition() 
-    w,h = int(w),int(h)
+
+def factor():
     try:
         f=float(sys.argv[1])
+        return f
     except ValueError:
         print('Only a numeric argument should be given.')
         sys.exit(1)
     except IndexError:
         print('Please provide a scaling factor.')
         sys.exit(1)
+
+def coordinates(f):
+    w,h=definition() 
+    w,h = int(w),int(h)
+    
     
 ############################
     left = w-(w*f)-(w*((1-f)/2)) #x1
