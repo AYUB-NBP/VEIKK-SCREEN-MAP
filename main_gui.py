@@ -4,7 +4,8 @@ import main
 import re
 
 def data_validation(x):
-    if re.findall(r"\d",x) and len(re.findall(r"\d",x)) == 1:
+    print(len(re.findall(r"\d",x)))
+    if re.findall(r"\d",x) and len(re.findall(r"\d",x)) <= 3:
         print('Valid Input')
         return True
     else:
