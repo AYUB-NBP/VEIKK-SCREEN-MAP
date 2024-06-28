@@ -3,14 +3,24 @@ from tkinter import *
 import main
 import re
 
+# def data_validation(x):
+#     print(len(re.findall(r"\d",x)))
+#     if re.findall(r"\d",x) and len(re.findall(r"\d",x)) <= 4:
+#         print('Valid Input')
+#         return True
+#     else:
+#         print('Invalid input, write a percentage between 0 and 100')
+#         return False
+
 def data_validation(x):
-    print(len(re.findall(r"\d",x)))
-    if re.findall(r"\d",x) and len(re.findall(r"\d",x)) <= 3:
-        print('Valid Input')
-        return True
-    else:
-        print('Invalid input, write a percentage between 0 and 100')
-        return False
+    try:
+        if float(x) and float(x)>0 and float(x)<= 100:
+            return True
+        else:
+            print('Invalid input, write a percentage between 0 and 100')
+            return False
+    except:
+        print('error')
     
 def on_submit(event=None):
     scale_value = scale_entry.get()
@@ -43,7 +53,7 @@ label.grid(column=0,row=1,sticky=(E),padx=5)
 #---------------------------------------------------------------------------
 #Entry Text Box
 scale = StringVar()
-scale_entry = tk.Entry(mainframe,width=2, textvariable=scale, bg='white', fg='black')
+scale_entry = tk.Entry(mainframe,width=4, textvariable=scale, bg='white', fg='black')
 scale_entry.grid(column=1,row=1,padx=25)
 # Percentage Label
 percentage = tk.Label(mainframe, text='%', background=theme)
@@ -62,5 +72,7 @@ mainframe.columnconfigure(0,weight=0)
 mainframe.columnconfigure(2,weight=1)
 
 root.mainloop()
+
+print('Program closed.')
 
 
