@@ -1,7 +1,4 @@
-#IMPORTANT!
-#MAKE SURE SCREEN MAPPING is set to "PART" an NOT "ALL",
-#  otherwise ScreenMapping will be reset after restarting TabletDriverCenter/Setting
-#  This program assumes you're running Windows 11 like me, I haven't test on Linux or others operating systems.
+#  This program assumes you're running Windows 11 like me, I haven't tested on Linux or others operating systems.
 
 from scrn_map import definition
 import os
@@ -81,14 +78,19 @@ def pid_finder(pid1,pid2):
 def config_modifier(user, c):
     config = ET.parse(f"C:/Users/{user}/AppData/Local/VKTablet/config_user.xml")
     root = config.getroot()
-    tablet_model = 'VK_2FEB_0003' #Name of child element that has my tablet's settings.
+    tablet_model = 'VK_2FEB_0003' #Name of child element that has my tablet's (veikk A50) settings.
     #in my case, my tablet code name is VK_2FEB_0003, since only the values in that child element change when changing settings from VKtablet software.
     tablet_config = root.find(f'{tablet_model}') #XML element selection process
     screen_map = tablet_config.find('ScreenMap')
+
+    screenareamode = tablet_config.find('ScreenId')
+
     left = screen_map.find('left')
     right = screen_map.find('right')
     top = screen_map.find('top')
     bottom = screen_map.find('bottom')
+
+    
 
     ########### Elements modification #############
     for x in c:
@@ -98,6 +100,8 @@ def config_modifier(user, c):
     top.text = str(c[1])
     right.text = str(c[2])
     bottom.text = str(c[3])
+
+    screenareamode.text = '1'
 
     config.write(f"C:/Users/{user}/AppData/Local/VKTablet/config_user.xml")
         
