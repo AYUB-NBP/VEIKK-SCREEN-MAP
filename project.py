@@ -6,8 +6,8 @@ import xml.etree.ElementTree as ET
 import subprocess
 import signal
 import psutil
-import time
 import sys
+import time
 
 #Change f to change scale factor.---> f now is an argument taken at launch.
 
@@ -33,7 +33,7 @@ def factor():
         print('Only a numeric argument should be given.')
         sys.exit(1)
     except IndexError:
-        print('Please provide a scaling factor.')
+        print('Please provide a scaling factor as an argument if not using GUI.')
         sys.exit(1)
 
 def coordinates(f):
@@ -63,11 +63,16 @@ def pid_finder(pid1,pid2):
     if pid1 == 0:
         print('TabletDriverCenter not running.')
         run_tab_setting()
+        
         time.sleep(1)
+
         pid_finder(pid1,pid2)
     elif pid2 == 0:
         print('TabletDriverSetting not running.')
         run_tab_setting()
+
+        time.sleep(1)
+
         pid_finder(pid1,pid2)
     if pid1 != 0:
         print(f"TabletDriverCenter.exe is running.")
@@ -117,17 +122,13 @@ def run_tab_setting():
     
 def reboot(user,c,pid1,pid2):
 
-    time.sleep(0.5)
-
     print('Rebooting processes.')
 #Killing TabletDriverCenter.exe and TabletDriverSetting.exe
     try:
         os.kill(pid1, signal.SIGTERM)
     except OSError:
-        print("Error: Can't kill TabletDriverCenter.exe.")
+        print("Error:TabletDriverCenter.exe not running yet.")
         main()
-
-    time.sleep(0.5)
 
     try:
         os.kill(pid2, signal.SIGTERM)

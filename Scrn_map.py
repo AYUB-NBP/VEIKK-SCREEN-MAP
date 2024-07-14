@@ -1,5 +1,4 @@
 from screeninfo import get_monitors
-import json
 
 def main():
     definition()

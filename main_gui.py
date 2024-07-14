@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import *
-import main
+import project
 import re
 
 def data_validation(x):
@@ -18,9 +18,9 @@ def on_submit(event=None):
     scale_value = scale_entry.get()
     print(f"Entered Scale:{scale_value}")
     if data_validation(scale_value):
-        main.gui_f = scale_value
-        print(main.gui_f)
-        main.core_func(float(main.gui_f)/100)
+        project.gui_f = scale_value
+        # print(project.gui_f)
+        project.core_func(float(project.gui_f)/100)
     else:
         scale_entry.delete(0, tk.END)
 
@@ -28,6 +28,8 @@ def on_submit(event=None):
 root = tk.Tk()
 root.title("Veikk Centered Screen Area Scaler")
 root.geometry('350x75')
+root.iconbitmap('icon.ico')
+
 
 #Adding a frame with padding
 theme = '#cef564'
@@ -62,6 +64,9 @@ scale_entry.bind("<Return>", on_submit)
 #MainFrame Column Weights
 mainframe.columnconfigure(0,weight=0)
 mainframe.columnconfigure(2,weight=1)
+
+# -------------------------------------
+print('Program launched.')
 
 root.mainloop()
 
