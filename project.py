@@ -36,20 +36,21 @@ def factor():
         print('Please provide a scaling factor as an argument if not using GUI.')
         sys.exit(1)
 
-def coordinates(f):
+def coordinates(f):#f for Factor/multiplier
     w,h=definition() 
     w,h = int(w),int(h)
     
     
 ############################
-    left = w-(w*f)-(w*((1-f)/2)) #x1
-    top =  h-(h*f)-(h*((1-f)/2))#y1
+    left = int(w-(w*f)-(w*((1-f)/2))) #x1
+    top =  int(h-(h*f)-(h*((1-f)/2)))#y1
     ###############
-    right = w - w*((1-f)/2)  #x2
-    bottom = h - h*((1-f)/2) #y2
+    right = int(w - w*((1-f)/2))  #x2
+    bottom = int(h - h*((1-f)/2)) #y2
 ############################
+
     coordinates = [left,top,right,bottom] #Order matching XML file for ease of use. (CRITICAL ORDER FOR CALCULATION)
-    # We're basically calculating the coordinates of two paints that make a rectangle left,top:x,y and right,bottom :x,y,this data format is just to inject in XML.
+    # We're basically calculating the coordinates of two points that make a rectangle left,top:x,y and right,bottom :x,y,this data format is just to inject in XML.
     return coordinates
 
 def pid_finder(pid1,pid2):
@@ -85,7 +86,10 @@ def config_modifier(user, c):
     root = config.getroot()
     tablet_model = 'VK_2FEB_0003' #Name of child element that has my tablet's (veikk A50) settings.
     #in my case, my tablet code name is VK_2FEB_0003, since only the values in that child element change when changing settings from VKtablet software.
-    tablet_config = root.find(f'{tablet_model}') #XML element selection process
+    
+    #XML element selection process
+    
+    tablet_config = root.find(f'{tablet_model}') 
     screen_map = tablet_config.find('ScreenMap')
 
     screenareamode = tablet_config.find('ScreenId')
