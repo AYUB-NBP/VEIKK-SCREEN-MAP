@@ -1,6 +1,7 @@
 #  This program assumes you're running Windows 11 like me, I haven't tested on Linux or others operating systems.
+# Make sure the Tablet is connected
 
-from scrn_map import definition
+from screen_definition import definition
 import os
 import xml.etree.ElementTree as ET
 import subprocess
@@ -16,12 +17,15 @@ def main():
     gui_f = 0
     f = factor() or gui_f
     core_func(f)
-    
+
 def core_func(f):
     c = coordinates(f)
     user = os.getlogin()
+    
+    #Initialising pids as 0, no need to change
     pid1 = 0  
     pid2 = 0
+
     pid1,pid2 = pid_finder(pid1, pid2)
     reboot(user,c,pid1,pid2)
 
@@ -33,7 +37,7 @@ def factor():
         print('Only a numeric argument should be given.')
         sys.exit(1)
     except IndexError:
-        print('Please provide a scaling factor as an argument if not using GUI.')
+        print('Please provide a scaling factor as an argument if not using GUI. (Betwenn 0 and 1)')
         sys.exit(1)
 
 def coordinates(f):#f for Factor/multiplier
@@ -53,7 +57,10 @@ def coordinates(f):#f for Factor/multiplier
     # We're basically calculating the coordinates of two points that make a rectangle left,top:x,y and right,bottom :x,y,this data format is just to inject in XML.
     return coordinates
 
+
+
 def pid_finder(pid1,pid2):
+
 
     for proc in psutil.process_iter():
         if "TabletDriverCenter" in proc.name():
@@ -64,21 +71,20 @@ def pid_finder(pid1,pid2):
     if pid1 == 0:
         print('TabletDriverCenter not running.')
         run_tab_setting()
-        
         time.sleep(1)
-
         pid_finder(pid1,pid2)
+
     elif pid2 == 0:
         print('TabletDriverSetting not running.')
         run_tab_setting()
-
         time.sleep(1)
-
         pid_finder(pid1,pid2)
+
     if pid1 != 0:
         print(f"TabletDriverCenter.exe is running.")
     if pid2 != 0:
         print(f"TabletDriverSetting.exe is running.")
+
     return pid1,pid2
     
 def config_modifier(user, c):
@@ -127,7 +133,7 @@ def run_tab_setting():
 def reboot(user,c,pid1,pid2):
 
     print('Rebooting processes.')
-#Killing TabletDriverCenter.exe and TabletDriverSetting.exe
+    #Killing TabletDriverCenter.exe and TabletDriverSetting.exe
     try:
         os.kill(pid1, signal.SIGTERM)
     except OSError:

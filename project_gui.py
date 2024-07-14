@@ -18,9 +18,9 @@ def on_submit(event=None):
     scale_value = scale_entry.get()
     print(f"Entered Scale:{scale_value}")
     if data_validation(scale_value):
-        project.gui_f = scale_value
+        project.gui_f = int(scale_value)/100
         # print(project.gui_f)
-        project.core_func(float(project.gui_f)/100)
+        project.core_func(project.gui_f)
     else:
         scale_entry.delete(0, tk.END)
 
