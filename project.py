@@ -45,13 +45,13 @@ def coordinates(f):#f for Factor/multiplier
     w,h = int(w),int(h)
     
     
-############################
+    ############################
     left = int(w-(w*f)-(w*((1-f)/2))) #x1
     top =  int(h-(h*f)-(h*((1-f)/2)))#y1
     ###############
     right = int(w - w*((1-f)/2))  #x2
     bottom = int(h - h*((1-f)/2)) #y2
-############################
+    ############################
 
     coordinates = [left,top,right,bottom] #Order matching XML file for ease of use. (CRITICAL ORDER FOR CALCULATION)
     # We're basically calculating the coordinates of two points that make a rectangle left,top:x,y and right,bottom :x,y,this data format is just to inject in XML.
@@ -126,6 +126,7 @@ def config_modifier(user, c):
 #     process = subprocess.Popen([r'C:\Program Files\VKTablet\TabletDriverCenter.exe'])
 #     return process
 ####### The above function was unnecessary because TabletDriverSetting.Exe launches TabletDriverCenter.exe automatically with it.
+
 def run_tab_setting():
     process = subprocess.Popen([r'C:\Program Files\VKTablet\TabletDriverSetting.exe'])
     return process
