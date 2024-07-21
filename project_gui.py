@@ -13,7 +13,6 @@ def data_validation(x):
         print('Invalid input, write a percentage between 1 and 100')
         return False
 
-    
 def on_submit(event=None):
     scale_value = scale_entry.get()
     print(f"Entered Scale:{scale_value}")
@@ -26,10 +25,9 @@ def on_submit(event=None):
 
 #Main window + title
 root = tk.Tk()
-root.title("Veikk Centered Screen Area Scaler")
+root.title("Veikk Screen Area Scaler")
 root.geometry('350x75')
 root.iconbitmap('icon.ico')
-
 
 #Adding a frame with padding
 theme = '#cef564'
@@ -66,6 +64,7 @@ mainframe.columnconfigure(0,weight=0)
 mainframe.columnconfigure(2,weight=1)
 
 # -------------------------------------
+
 print('Program launched.')
 
 root.mainloop()
