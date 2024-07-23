@@ -1,5 +1,6 @@
 /.venv
 /venv
 /myvenv
+./myvenv
 .pytest_cache
 __pycache__

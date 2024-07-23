@@ -25,8 +25,8 @@ def on_submit(event=None):
 
 #Main window + title
 root = tk.Tk()
-root.title("Veikk Screen Area Scaler")
-root.geometry('350x75')
+root.title("Veikk Screen Area Changer")
+root.geometry('350x75+800+440')
 root.iconbitmap('icon.ico')
 
 #Adding a frame with padding
@@ -70,5 +70,3 @@ print('Program launched.')
 root.mainloop()
 
 print('Program closed.')
-
-

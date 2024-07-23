@@ -98,9 +98,9 @@ def reboot(user, c, pid1, pid2):
     
     _pid1, _pid2 = pid_finder()
     if (_pid1, _pid2) == (pid1, pid2):
-        print(f"Failed to reboot. Old PIDs: {pid1}, {pid2} | New PIDs: {_pid1}, {_pid2}")
+        print(f"Failed to reboot.\nOld PIDs: {pid1}, {pid2}\nNew PIDs: {_pid1}, {_pid2}")
     else:
-        print(f"Reboot successful. Old PIDs: {pid1}, {pid2} | New PIDs: {_pid1}, {_pid2}")
+        print(f"Reboot successful.\nOld PIDs: {pid1}, {pid2}\nNew PIDs: {_pid1}, {_pid2}")
 
 if __name__ == "__main__":
     main()
