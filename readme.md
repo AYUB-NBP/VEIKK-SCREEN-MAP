@@ -2,7 +2,7 @@
 ### Video Demo: https://youtu.be/h7LApZPbG7Q
 ### Description:
 My project == script
-Veikk program == software
+, Veikk program == software
 
 My project is a program that makes it possible to easily resize the screen area in which the Veikk A50 drawing tablet is usable. 
 
