@@ -92,6 +92,8 @@ def reboot(user, c, pid1, pid2):
         os.kill(pid2, signal.SIGTERM)
     except OSError as e:
         print(f"Error killing processes: {e}")
+        print('##### Run as Administrator! #####')
+        sys.exit(1)
     
     config_modifier(user, c)
     run_tab_setting()
